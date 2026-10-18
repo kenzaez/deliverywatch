@@ -1,1 +1,46 @@
+# Etude de conception (Axe du projet)
+Groupe : Ezzahed kenza, el fatimi oumnia, aymane ameur el idrissi, adnane belayachi | Version : brouillon | Date : JJ/MM/AAAA
+
+## 1. Contexte et utilisateurs
+
+Organisation : une marketplace ecommerce qui livre via des transporteurs tiers.
+
+Utilisateur principal : le responsable du suivi logistique (service client / operations), pas "les utilisateurs".
+
+## 2. Probleme et decision
+
+Decision : pour chaque commande en cours, contacter proactivement le client ou relancer le transporteur, ou ne rien faire.
+Frequence : score recalcule chaque jour pour les commandes non livrees, avec un premier score a la validation de la commande.
+Consequence d'une erreur : 
+- Retard non detecte : client mecontent, reclamation, remboursement.
+- Fausse alerte : appel ou relance inutile, temps perdu pour l'equipe.
+Le premier cout est plus eleve que le second.
+
+## 3. Approche par sous probleme
+| Sous probleme | Approche | Pourquoi une approche plus simple ne suffit pas |
+|---|---|---|
+| Estimer la probabilite qu'une commande soit en retard | ML (gradient boosting) | La date estimee du transporteur ne tient pas compte de la saison, du vendeur, de la distance, du poids. Elle est notre baseline mais elle rate beaucoup de retards |
+| Decider quelles commandes alerter | Regles (seuil sur la probabilite) | Pas besoin de ML, un seuil regle selon le cout des erreurs suffit |
+| (Optionnel) Proposer la procedure a suivre | RAG sur procedures logistiques | Les equipes ne connaissent pas toutes les procedures par coeur, un simple mot cle ne retrouve pas la bonne |
+
+## 4. Donnees
+
+
+## 5. Metriques, baseline et criteres d'acceptation
+Baseline et son resultat : date de livraison estimee d'origine (ou "toujours a l'heure"). Resultat a calculer sur le jeu de test. Attention : "toujours a l'heure" donne une accuracy elevee (les retards sont rares) mais ne sert a rien, donc on ne juge pas sur l'accuracy.
+Metrique principale : rappel sur la classe "retard" a precision minimale fixee, parce qu'un retard rate coute plus qu'une fausse alerte. On suit aussi PR AUC.
+Criteres d'acceptation (chiffres a ajuster apres la baseline) :
+- Rappel >= 0.60 avec precision >= 0.40, sur un jeu de test separe par date (pas un split aleatoire)
+- Mieux que la baseline sur les deux metriques
+- Temps de reponse de l'API < 1 s
+
+## 6. Architecture prevue
+
+
+## 7. Choix technologiques
+
+
+## 8. Risques, ethique, confidentialite
+
+## 9. Limites et hors perimetre
 
