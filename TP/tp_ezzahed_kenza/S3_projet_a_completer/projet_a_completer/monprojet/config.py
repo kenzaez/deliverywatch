@@ -4,20 +4,23 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 
 # --- Vos données -------------------------------------------------------------
-DATA_PATH = ROOT / "data" / "exemple_pannes.csv"   # remplacez par votre fichier CSV
-TARGET = "failure"                                  # la colonne à prédire
-FEATURES = None              # None = toutes les colonnes sauf la cible ; sinon une liste de noms
-TEXT_COLUMN = None           # le nom d'une colonne de texte libre (réclamations…), sinon None
+DATA_PATH = ROOT / "data" / "cantine_repas.csv"
+TARGET = "repas_servis"                 # nombre de repas servis le jour J
+FEATURES = [                            # explicite : on exclut "date" et la cible
+    "jour", "inscrits", "menu", "temperature_c", "pluie_mm",
+    "examens", "sortie_scolaire", "veille_vacances",
+    "repas_semaine_precedente",
+]
+TEXT_COLUMN = None
 
 # --- Type de problème --------------------------------------------------------
-TASK = "classification"      # "classification" ou "regression"
-MAIN_METRIC = "recall"       # classification : "accuracy", "recall", "precision", "f1"
-                             # regression : "mae", "rmse", "r2"
+TASK = "regression"
+MAIN_METRIC = "mae"                     # en nombre de repas ; "rmse" et "r2" possibles
 
 # --- Découpage entraînement / test -------------------------------------------
-SPLIT = "random"             # "random" ; ou "chronologique" pour une série temporelle
-TIME_COLUMN = None           # colonne de date, obligatoire si SPLIT = "chronologique"
-TEST_SIZE = 0.2              # part des données gardée pour le test
-SEED = 42                    # graine : mêmes résultats à chaque lancement
+SPLIT = "chronologique"                 # série temporelle : pas de mélange aléatoire
+TIME_COLUMN = "date"
+TEST_SIZE = 0.2                         # ≈ les 68 derniers jours d'école
+SEED = 42
 
 MODELS_DIR = ROOT / "models"

@@ -2,8 +2,6 @@
 
 Usage, depuis la racine du projet : python -m monprojet.train
 """
-import json
-
 import joblib
 import numpy as np
 import pandas as pd
@@ -37,6 +35,7 @@ def build_preprocessing(X: pd.DataFrame) -> ColumnTransformer:
     if text:
         steps.append(("texte", TfidfVectorizer(), config.TEXT_COLUMN))
     return ColumnTransformer(steps, sparse_threshold=0)
+
 
 def evaluate(model, X_test, y_test) -> dict:
     predictions = model.predict(X_test)
@@ -78,17 +77,18 @@ def main() -> None:
     table = pd.DataFrame(results).T.sort_values(
         config.MAIN_METRIC, ascending=not higher_is_better, kind="stable"
     )
-    print(table)
+    table.index.name = "modele"
+
+    print(table.to_string())
 
     best = table.index[0]
 
     config.MODELS_DIR.mkdir(parents=True, exist_ok=True)
     joblib.dump(fitted[best], config.MODELS_DIR / "model.joblib")
-    with open(config.MODELS_DIR / "metrics.json", "w", encoding="utf-8") as f:
-        json.dump(
-            {"main_metric": config.MAIN_METRIC, "best": best, "results": results},
-            f,
-            indent=2,
-        )
+    table.to_csv(config.MODELS_DIR / "metrics.csv", encoding="utf-8")
 
     print(f"\nMeilleur modele ({config.MAIN_METRIC}) : {best}")
+
+
+if __name__ == "__main__":
+    main()
